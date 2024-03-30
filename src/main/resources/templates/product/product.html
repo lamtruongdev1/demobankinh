@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/image/logo.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product</title>
+    <link th:insert="~{common/taglib  :: taglib}">
+    <style>
+        .row {
+            max-width: 100%
+        }
+    </style>
+</head>
+
+<body ng-app="shopping-cart-app" ng-controller="shopping-cart-ctrl">
+    <div th:insert="~{common/header :: header}"></div>
+    <div class="">
+        <br><br><br><br>
+        <div class="container">
+            <div class="row product-ctrl ">
+                <div class="col-md-8 search">
+                    <form action="/products/search" method="get">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control form-control-sm" name="name" placeholder="Bạn muốn tìm gì?" aria-label="" aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <button class="btn  btn-xs" type="submit"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-2 sort">
+                    <a class="btn " href="/products/sort/asc">Tăng dần</a>
+                    <a class="btn" href="/products/sort/desc">Giảm dần</a>
+                </div>
+                <div class="col-md-2 page">
+                    <div class="pagination">
+                        <ul>
+                            <li th:if="${currentPage > 1}">
+                                <a th:href="@{'/products?page=' + ${currentPage - 1}}" th:text="${currentPage - 1}">1</a>
+                            </li>
+                            <li th:if="${currentPage > 2}">
+                                <a th:href="@{'/products?page=' + ${currentPage - 2}}" th:text="${currentPage - 2}">2</a>
+                            </li>
+                            <li class="active"><span th:text="${currentPage}">3</span></li>
+                            <li th:if="${currentPage < totalPages - 1}">
+                                <a th:href="@{'/products?page=' + ${currentPage + 1}}" th:text="${currentPage + 1}">4</a>
+                            </li>
+                            <li th:if="${currentPage < totalPages - 2}">
+                                <a th:href="@{'/products?page=' + ${currentPage + 2}}" th:text="${currentPage + 2}">5</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <section class="py-5 col-md-12 product">
+                <div class="row ">
+                    <span class="text-center text-danger">[[${message}]]</span>
+                    <div class="col-md-3" th:each="prod : ${products}">
+                        <div class="card mb-4">
+                            <img th:src="@{'/image/'+ ${prod.image}}" width="200px" height="300px" class="card-img-top" alt="img">
+                            <div class="card-body">
+                                <h5 class="card-title">[[${prod.name}]]</h5>
+                                <span class="badge bg-success">[[${prod.price}]]$</span>
+                                <p class="card-text">[[${prod.description}]]</p>
+                                <a th:attr="ng-click=@{|cart.add(${prod.id})|}" class="btn border bg-info"><i class="fa-solid fa-cart-plus"></i></a>
+                                <a th:href="@{|/products/${prod.id}|}" class="btn border bg-info"><i class="fa-solid fa-circle-info"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <br>
+    <div th:insert="~{common/footer :: footer} "></div>
+    <script src="/js/shopping-cart-controller.js"></script>
+</body>
+<!--<script>-->
+<!--const app = angular.module("shopping-cart-app", []);-->
+<!--app.controller("shopping-cart-ctrl", function($scope, $rootScope, $http) {-->
+<!--	 // var cartCtrl = this;-->
+<!--	$scope.cart = {-->
+<!--        items: [],-->
+<!--        add(id) {-->
+<!--            var item = this.items.find(item => item.id == id);-->
+<!--            if (item) {-->
+<!--                item.qty++;-->
+<!--                this.saveToLocalStorage();-->
+<!--            }-->
+<!--            else {-->
+<!--                $http.get(`/product/${id}`).then(resp => {-->
+<!--                    resp.data.qty = 1;-->
+<!--                    this.items.push(resp.data);-->
+<!--                    this.saveToLocalStorage();-->
+<!--                })-->
+<!--            }-->
+<!--        },-->
+
+<!--        remove: function(id) {-->
+<!--            var index = this.items.findIndex(item => item.id == id);-->
+<!--            if (index !== -1) {-->
+<!--                this.items.splice(index, 1);-->
+<!--                this.saveToLocalStorage();-->
+<!--            }-->
+<!--        },-->
+
+<!--        clear: function() {-->
+<!--            this.items = [];-->
+<!--            this.saveToLocalStorage();-->
+<!--        },-->
+
+<!--        amt_of: function(item) {-->
+<!--            return item.qty * item.productPrice;-->
+<!--        },-->
+
+<!--        get count() {-->
+<!--            return this.items.map(item => item.qty).reduce((total, qty) => total + qty, 0);-->
+<!--        },-->
+
+<!--        get amount() {-->
+<!--            return this.items-->
+<!--                .map(item => item.qty * item.productPrice)-->
+<!--                .reduce((total, qty) => total + qty, 0);-->
+<!--        },-->
+
+<!--        saveToLocalStorage: function() {-->
+<!--            var json = JSON.stringify(angular.copy(this.items));-->
+<!--            localStorage.setItem("cart", json);-->
+<!--        },-->
+
+<!--        loadFromLocalStorage: function() {-->
+<!--            var json = localStorage.getItem("cart");-->
+<!--            this.items = json ? JSON.parse(json) : [];-->
+<!--        },-->
+
+<!--       updateCartItem: function(item) {-->
+<!--            item.qty = parseInt(item.qty); // Đảm bảo qty là một số nguyên-->
+<!--            item.total = item.qty * item.productPrice;-->
+<!--            this.saveToLocalStorage();-->
+<!--        }-->
+<!--    };-->
+<!--    $scope.cart.loadFromLocalStorage();-->
+<!--	$scope.cartLength = $scope.cart.items.length;-->
+
+<!--});-->
+
+<!--</script>-->
+
+</html>
